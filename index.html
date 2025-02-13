@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Valentine's Surprise</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: pink;
+            overflow: hidden;
+            flex-direction: column;
+        }
+        .heart-container {
+            position: relative;
+            width: 100px;
+            height: 100px;
+            cursor: pointer;
+            margin-top: 60px
+        }
+        .heart {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            background-color: red;
+            transform: rotate(45deg);
+            top: 50%;
+            left: 50%;
+            transform-origin: center;
+            transition: transform 0.5s ease-in-out;
+        }
+        .heart::before,
+        .heart::after {
+            content: '';
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            background-color: red;
+            border-radius: 50%;
+        }
+        .heart::before {
+            top: -50px;
+            left: 0;
+        }
+        .heart::after {
+            left: -50px;
+            top: 0;
+        }
+        .message {
+            position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    transition: transform 0.5s ease-in-out;
+    z-index: 11; /* Ensure message appears above the timer */
+        }
+        .open .heart {
+            transform: rotate(45deg) scale(0);
+        }
+        .open .message {
+            transform: translate(-50%, -50%) scale(1);
+        }
+        .question {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+        }
+        .buttons {
+            margin-top: 10px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin: 5px;
+            cursor: pointer;
+        }
+        .celebration {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            color: white;
+            font-size: 24px;
+            text-align: center;
+            animation: fadeIn 1s ease-in-out;
+        }
+        .note-section {
+            display: none;
+            margin-top: 20px;
+            text-align: center;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            width: 80%;
+            max-width: 500px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        textarea {
+            width: 100%;
+            height: 100px;
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        .send-button {
+            margin-top: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            background: #d6336c;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+            display: block;
+            width: 100%;
+        }
+        .send-button:hover {
+            background: #b02450;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background: gold;
+            top: -10px;
+            animation: fall 3s linear infinite;
+        }
+        @keyframes fall {
+            to { transform: translateY(100vh) rotate(360deg); }
+        }
+
+
+        .timer {
+            position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 20px;
+    font-weight: bold;
+    background: white;
+    padding: 10px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    animation: fadeIn 1s ease-in-out;
+    z-index: 10; /* Ensure timer stays on top */
+        }
+
+
+        /* Note Section Styles */
+        .romantic-note {
+            width: 80%;
+            max-width: 500px;
+            padding: 20px;
+            background: linear-gradient(135deg, #ffdde1, #ee9ca7);
+            border-radius: 10px;
+            text-align: center;
+            font-family: 'Dancing Script', cursive;
+            font-size: 22px;
+            color: #d6336c;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            animation: fadeIn 1s ease-in-out;
+            position: relative;
+        }
+
+        .note-text {
+            min-height: 60px;
+        }
+
+        .next-btn {
+            margin-top: 15px;
+            padding: 8px 15px;
+            font-size: 16px;
+            background: #d6336c;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .next-btn:hover {
+            background: #b02450;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 600px) {
+    body {
+        flex-direction: column;
+        padding: 20px;
+        text-align: center;
+    }
+
+    .timer {
+        width: 90%;
+        font-size: 16px;
+        padding: 8px;
+        top: 10px;
+    }
+
+    .heart-container {
+        width: 80px;
+        height: 80px;
+        margin-top: 100px;
+    }
+
+    .heart {
+        width: 80px;
+        height: 80px;
+    }
+
+    .heart::before,
+    .heart::after {
+        width: 80px;
+        height: 80px;
+    }
+
+    .heart::before {
+        top: -40px;
+    }
+
+    .heart::after {
+        left: -40px;
+    }
+
+    .message {
+        width: 90%;
+        font-size: 18px;
+        padding: 15px;
+    }
+
+    .romantic-note {
+        width: 90%;
+        font-size: 20px;
+    }
+
+    .question {
+        font-size: 18px;
+        margin-top: 30px;
+    }
+
+    button {
+        padding: 8px 15px;
+        font-size: 14px;
+    }
+
+    .note-section {
+        width: 90%;
+    }
+
+    textarea {
+        width: 100%;
+    }
+}
+
+    </style>
+</head>
+<body>
+    <div class="timer" id="timer">Loading...</div>
+    <div class="heart-container" onclick="toggleHeart()">
+        <div class="heart"></div>
+        <div class="message">I Love You Tano! ❤️</div>
+    </div>
+    <div class="question" id="question">
+        <br><br><br> <p>Will you be mine forever? ❤️</p>
+        <div class="buttons">
+            <button id="yes" onclick="showCelebration()">Yes</button>
+            <button id="no" onclick="shrinkNo()">No</button>
+        </div>
+    </div>
+    <div class="celebration" id="celebration" style="display: none;">
+        <h1>My Pekachuu ❤️! I love you too! ❤️🎉</h1><br><br><br>
+    </div>
+
+    <div class="note-section" id="note-section">
+        <h2>Leave a sweet note for me! ❤️</h2>
+        <textarea id="note" placeholder="Write your message here..."></textarea>
+        <br>
+        <button class="send-button" onclick="saveNote()">Send</button>
+        <p id="note-response" style="display: none; font-size: 18px; color: red;"></p>
+    </div>
+      <br><br><br><br><br><div class="romantic-note" id="romantic-note">
+        <p class="note-text" id="note-text"></p>
+        <button class="next-btn" onclick="nextNote()">Next ❤️</button>
+
+        
+    <script>
+        let notes = [
+            "My love, you mean the world to me. Every moment with you is a dream come true. ❤️",
+            "Every day with you is filled with happiness and love. You are my sunshine! ☀️",
+            "I am so grateful for your love and presence in my life. You complete me. 💖",
+            "No matter where life takes us, my heart will always belong to you. ❤️"
+        ];
+        let noteIndex = 0;
+        let i = 0;
+        let speed = 100;
+        let noteContainer = document.getElementById("romantic-note");
+        let textElement = document.getElementById("note-text");
+
+        function typeWriter() {
+            if (i < notes[noteIndex].length) {
+                textElement.innerHTML += notes[noteIndex].charAt(i);
+                i++;
+                setTimeout(typeWriter, speed);
+            }
+        }
+        
+        function nextNote() {
+            i = 0;
+            noteIndex = (noteIndex + 1) % notes.length;
+            textElement.innerHTML = "";
+            typeWriter();
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            noteContainer.style.display = "block";
+            typeWriter();
+        });
+
+
+
+        function toggleHeart() {
+            document.querySelector('.heart-container').classList.toggle('open');
+            setTimeout(() => {
+                document.getElementById('question').style.display = 'block';
+            }, 500);
+        }
+
+        function showCelebration() {
+            document.getElementById('celebration').style.display = 'flex';
+            createConfetti();
+            setTimeout(() => {
+                document.getElementById('celebration').style.display = 'none';
+                document.getElementById('note-section').style.display = 'block';
+            }, 3000);
+        }
+
+        function createConfetti() {
+            for (let i = 0; i < 100; i++) {
+                let confetti = document.createElement('div');
+                confetti.classList.add('confetti');
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.backgroundColor = ['red', 'gold', 'blue', 'green', 'purple'][Math.floor(Math.random() * 5)];
+                confetti.style.animationDuration = (Math.random() * 2 + 1) + 's';
+                document.body.appendChild(confetti);
+                setTimeout(() => confetti.remove(), 3000);
+            }
+        }
+        let shrinkScale = 1; // Initial scale
+
+function shrinkNo() {
+    let noButton = document.getElementById('no');
+    
+    if (shrinkScale > 0.1) { // Prevent disappearing completely
+        shrinkScale -= 0.1; // Reduce scale step by step
+        noButton.style.transform = `scale(${shrinkScale})`;
+        noButton.style.transition = "transform 0.3s ease-in-out";
+    } else {
+        noButton.innerText = "You can't escape! ❤️"; // Fun message when it's too small
+        noButton.style.pointerEvents = "none"; // Disable button when too small
+    }
+}
+
+        function saveNote() {
+    let note = document.getElementById('note').value;
+    if (note.trim() !== "") {
+        fetch("https://docs.google.com/forms/d/e/1FAIpQLSfxcNXjvNxWypJexje0orsLt-kCjlBgtoy_dKDSxHHoTGMQrA/formResponse", {
+            method: "POST",
+            mode: "no-cors",
+            body: new URLSearchParams({ "entry.1423497414": note }),
+            headers: { "Content-Type": "application/x-www-form-urlencoded" }
+        });
+
+        // Show a romantic confirmation message instead of "Oops!"
+        document.getElementById('note-response').innerText = "Aww! Your message is safe in my heart ❤️";
+        document.getElementById('note-response').style.display = 'block';
+
+        // Optionally clear the input after submission
+        document.getElementById('note').value = "";
+
+        // Add a cute animation effect
+        let responseBox = document.getElementById('note-response');
+        responseBox.style.transition = "transform 0.5s ease-in-out";
+        responseBox.style.transform = "scale(1.2)";
+        setTimeout(() => responseBox.style.transform = "scale(1)", 500);
+    }
+}
+
+function updateTimer() {
+            let startDate = new Date("2018-08-14T00:00:00");
+            let now = new Date();
+            let diff = now - startDate;
+
+            let seconds = Math.floor((diff / 1000) % 60);
+            let minutes = Math.floor((diff / 1000 / 60) % 60);
+            let hours = Math.floor((diff / 1000 / 60 / 60) % 24);
+            let days = Math.floor(diff / 1000 / 60 / 60 / 24);
+            let years = Math.floor(days / 365);
+            days = days % 365;
+
+            document.getElementById("timer").innerHTML =
+                `Together for: ${years} years, ${days} days, ${hours} hours, ${minutes} minutes, ${seconds} seconds ❤️`;
+        }
+        setInterval(updateTimer, 1000);
+        updateTimer();
+
+       
+    </script>
+</body>
+</html>
